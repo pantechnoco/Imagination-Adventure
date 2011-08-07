@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <title>Imagine Adventure</title>
+        <style>
+            #canvas {
+                width: 512px;
+                height: 512px;
+            }
+        </style>
+    </head>
+    <body onload="init()">
+        <canvas id="canvas" width="128" height="128" />
+        <script type="text/javascript">
+        var canvas
+        ,   engine
+        ,   ctx
+        ,   layers
+        ,   sprites
+        ,   tileset
+        
+        ,   TILEWIDTH
+
+        ,   T_WHITE = 0
+        ,   T_TRANSPARENT = 62
+        ,   T_GRAY = 31
+        ,   T_LTBLUE = 12
+        ;
+
+        function Layer(h, w) {
+            this.height = h;
+            this.width = w;
+            for (var h_i=0; h_i<h; h_i++) {
+                for (var w_i=0; w_i<h; w_i++) {
+                    this.push(T_TRANSPARENT);
+                }
+            }
+        };
+        Layer.prototype = (new Array());
+        Layer.prototype.draw = function() {
+            var x, y, i, l = this.width * this.height;
+            for (i=0; i<l; i++) {
+                engine.blit(this[i], (i % TILEWIDTH) * 8, parseInt(i / TILEWIDTH) * 8);
+            }
+        };
+        Layer.prototype.setAll = function(t) {
+            var x, y, i, l = this.width * this.height;
+            for (i=0; i<l; i++) {
+                this[i] = t;
+            }
+        };
+
+        function Sprite(x, y, t) {
+            this.x = x;
+            this.y = y;
+            this.t = t;
+        }
+        Sprite.prototype.draw = function() {
+            engine.blit(this.t, this.x, this.y);
+        };
+
+        function init() {
+            engine = new Engine();
+        }
+
+        function Engine() {
+            this.canvas = document.getElementById('canvas');
+            this.ctx = this.canvas.getContext('2d');
+
+            TILEWIDTH = this.canvas.getAttribute('width') / 8;
+
+            layers = [];
+            layers.push(new Layer(TILEWIDTH, TILEWIDTH));
+            layers.push(new Layer(TILEWIDTH, TILEWIDTH));
+            layers.push(new Layer(TILEWIDTH, TILEWIDTH));
+            layers.push(new Layer(TILEWIDTH, TILEWIDTH));
+
+            sprites = [];
+            sprites.push(new Sprite(50, 50, 3));
+
+            tileset = new Image();
+            tileset.onload = ready;
+            tileset.src = "tileset.png";
+
+            layers[0].setAll(T_LTBLUE);
+        }
+        Engine.prototype.blit = function blit(i, x, y) {
+            var sx = i % 8
+            ,   sy = parseInt(i / 8)
+            ;
+            this.ctx.drawImage(tileset, sx*8, sy*8, 8, 8, x, y, 8, 8);
+        }
+
+        function ready() {
+            window.setInterval(function(){
+                layers[0].draw();
+                layers[1].draw();
+
+                var sl = sprites.length, si;
+                for (si=0; si<sl; si++) {
+                    sprites[si].draw();
+                }
+
+                layers[2].draw();
+                layers[3].draw();
+            }, 1000/30);
+        }
+        </script>
+    </body>
+</html>
