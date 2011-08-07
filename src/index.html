@@ -89,19 +89,22 @@
             ;
             this.ctx.drawImage(tileset, sx*8, sy*8, 8, 8, x, y, 8, 8);
         }
+        Engine.prototype.tick = function() {
+            layers[0].draw();
+            layers[1].draw();
+
+            var sl = sprites.length, si;
+            for (si=0; si<sl; si++) {
+                sprites[si].draw();
+            }
+
+            layers[2].draw();
+            layers[3].draw();
+        }
 
         function ready() {
             window.setInterval(function(){
-                layers[0].draw();
-                layers[1].draw();
-
-                var sl = sprites.length, si;
-                for (si=0; si<sl; si++) {
-                    sprites[si].draw();
-                }
-
-                layers[2].draw();
-                layers[3].draw();
+                engine.tick()
             }, 1000/30);
         }
         </script>
