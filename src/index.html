@@ -20,6 +20,11 @@
         
         ,   TILEWIDTH
 
+        ,   K_LEFT = 37
+        ,   K_UP = 38
+        ,   K_RIGHT = 39
+        ,   K_DOWN = 40
+
         ,   T_WHITE = 0
         ,   T_TRANSPARENT = 54
         ,   T_GRAY = 31
@@ -145,6 +150,12 @@
 
             layers[2].draw();
             layers[3].draw();
+
+            if (this.keystate[K_RIGHT]) {
+                sprites[0].x += 1;
+            } else if (this.keystate[K_LEFT]) {
+                sprites[0].x -= 1;
+            }
         }
 
         function ready() {
