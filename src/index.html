@@ -63,6 +63,16 @@
         }
 
         function Engine() {
+            this.keystate = keystate = [];
+            window.onkeydown = function(e) {
+                keystate[e.keyCode] = true;
+                return false;
+            }
+            window.onkeyup = function(e) {
+                keystate[e.keyCode] = false;
+                return false;
+            }
+
             this.canvas = document.getElementById('canvas');
             this.ctx = this.canvas.getContext('2d');
             this.tilesets = []
