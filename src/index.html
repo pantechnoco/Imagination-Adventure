@@ -82,6 +82,10 @@
             layers[3][1] = 64;
             layers[3][2] = 64;
 
+            layers[3][13] = 64 + 56;
+            layers[3][14] = 64 + 56;
+            layers[3][15] = 64 + 58;
+
             layers[0].setAll(T_LTBLUE);
 
             this.loadTilesets(ready, "tileset.png", "alphanum.png");
@@ -102,7 +106,7 @@
                         cb()
                     }
                 };
-                tileset.src = src[i];
+                tileset.src = src[i] + "?ts=" + (new Date().toISOString());
             }
 
         }
