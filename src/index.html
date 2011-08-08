@@ -86,6 +86,13 @@
             layers[3][14] = 64 + 56;
             layers[3][15] = 64 + 58;
 
+            for (var i=0; i<16; i++) {
+                layers[2][ 16 * 12 + i ] = 28;
+                layers[2][ 16 * 13 + i ] = 27;
+                layers[2][ 16 * 14 + i ] = 27;
+                layers[2][ 16 * 15 + i ] = 27;
+            }
+
             layers[0].setAll(T_LTBLUE);
 
             this.loadTilesets(ready, "tileset.png", "alphanum.png");
