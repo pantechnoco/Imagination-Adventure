@@ -78,10 +78,13 @@
             sprites = [];
             sprites.push(new Sprite(50, 50, 3));
 
+            layers[3][0] = 65;
+            layers[3][1] = 64;
+            layers[3][2] = 64;
 
             layers[0].setAll(T_LTBLUE);
 
-            this.loadTilesets(ready, "tileset.png");
+            this.loadTilesets(ready, "tileset.png", "alphanum.png");
         }
         Engine.prototype.loadTilesets = function() {
             var tileset
@@ -99,15 +102,16 @@
                         cb()
                     }
                 };
-                tileset.src = src;
+                tileset.src = src[i];
             }
 
         }
         Engine.prototype.blit = function blit(i, x, y) {
-            var sx = i % 8
-            ,   sy = parseInt(i / 8)
+            var sx = (i % 64) % 8
+            ,   sy = parseInt((i % 64) / 8)
+            ,   tileset = this.tilesets[parseInt(i / 64)]
             ;
-            this.ctx.drawImage(this.tilesets[parseInt(i / 64)], sx*8, sy*8, 8, 8, x, y, 8, 8);
+            this.ctx.drawImage(tileset, sx*8, sy*8, 8, 8, x, y, 8, 8);
         }
         Engine.prototype.tick = function() {
             layers[0].draw();
