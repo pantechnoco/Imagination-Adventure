@@ -71,6 +71,24 @@
             engine.blit(this.t, this.x, this.y);
         };
 
+        function SpriteGroup(x, y, sprites) {
+            this.x = x;
+            this.y = y;
+            this.sprites = sprites;
+        }
+        SpriteGroup.prototype.draw = function() {
+            var sl = this.sprites.length
+            ,   i
+            ,   s
+            ,   x = this.x
+            ,   y = this.y
+            ;
+            for (i=0; i<sl; i++) {
+                s = this.sprites[i];
+                engine.blit(s.t, x+s.x, y+s.y);
+            }
+        };
+
         function init() {
             engine = new Engine();
         }
@@ -99,7 +117,10 @@
             layers.push(new Layer(TILEWIDTH, TILEWIDTH));
 
             sprites = [];
-            sprites.push(new Sprite(50, 50, 3));
+            sprites.push(new SpriteGroup(50, 50, [
+                new Sprite(0,  0, 3)
+            ,   new Sprite(0, -8, 3+8)
+            ]));
 
             layers[3][0] = 65;
             layers[3][1] = 64;
