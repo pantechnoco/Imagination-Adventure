@@ -55,6 +55,12 @@
                 this[i] = t;
             }
         };
+        Layer.prototype.get = function(x, y) {
+            var i = (y * this.width) + x
+            ,   t = this[i]
+            ;
+            return t;
+        };
 
         function Sprite(x, y, t) {
             this.x = x;
@@ -157,6 +163,13 @@
                 sprites[0].x += 1;
             } else if (this.keystate[K_LEFT]) {
                 sprites[0].x -= 1;
+            }
+
+            var ty = parseInt((sprites[0].y + 8) / 8);
+            var tx = parseInt(sprites[0].x / 8);
+            var under = layers[2].get(tx, ty);
+            if (under == 0) {
+                sprites[0].y += 1;
             }
         }
 
