@@ -70,6 +70,9 @@
         Sprite.prototype.draw = function() {
             engine.blit(this.t, this.x, this.y);
         };
+        Sprite.prototype.tick = function() {
+
+        };
 
         function SpriteGroup(x, y, sprites) {
             this.x = x;
@@ -86,6 +89,14 @@
             for (i=0; i<sl; i++) {
                 s = this.sprites[i];
                 engine.blit(s.t, x+s.x, y+s.y);
+            }
+        };
+        SpriteGroup.prototype.tick = function() {
+            var ty = parseInt((this.y + 8) / 8);
+            var tx = parseInt(this.x / 8);
+            var under = layers[2].get(tx, ty);
+            if (under == 0) {
+                this.y += 1;
             }
         };
 
@@ -175,6 +186,7 @@
             var sl = sprites.length, si;
             for (si=0; si<sl; si++) {
                 sprites[si].draw();
+                sprites[si].tick();
             }
 
             layers[2].draw();
@@ -184,13 +196,6 @@
                 sprites[0].x += 1;
             } else if (this.keystate[K_LEFT]) {
                 sprites[0].x -= 1;
-            }
-
-            var ty = parseInt((sprites[0].y + 8) / 8);
-            var tx = parseInt(sprites[0].x / 8);
-            var under = layers[2].get(tx, ty);
-            if (under == 0) {
-                sprites[0].y += 1;
             }
 
             requestAnimFrame(function() {
