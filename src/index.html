@@ -34,6 +34,8 @@
         ;
 
         function Layer(h, w) {
+            this.offx = 0;
+            this.offy = 0;
             this.height = h;
             this.width = w;
             for (var h_i=0; h_i<h; h_i++) {
@@ -46,7 +48,9 @@
         Layer.prototype.draw = function() {
             var x, y, i, l = this.width * this.height;
             for (i=0; i<l; i++) {
-                engine.blit(this[i], (i % TILEWIDTH) * 8, parseInt(i / TILEWIDTH) * 8);
+                x = (i % TILEWIDTH) * 8 + this.offx;
+                y = parseInt(i / TILEWIDTH) * 8 + this.offy;
+                engine.blit(this[i], x, y);
             }
         };
         Layer.prototype.setAll = function(t) {
