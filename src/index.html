@@ -65,6 +65,11 @@
             ;
             return t;
         };
+        Layer.prototype.set = function(x, y, t) {
+            var i = (y * this.width) + x
+            ;
+            this[i] = t;
+        };
 
         function Sprite(x, y, t) {
             this.x = x;
@@ -90,19 +95,30 @@
             ,   x = this.x
             ,   y = this.y
             ;
+            layers[0].draw();
+            layers[1].draw();
             for (i=0; i<sl; i++) {
                 s = this.sprites[i];
                 engine.blit(s.t, x+s.x, y+s.y);
             }
+            layers[2].draw();
+            layers[3].draw();
         };
         SpriteGroup.prototype.tick = function() {
             var ty = parseInt((this.y + 8) / 8);
             var tx = parseInt(this.x / 8);
             var under = layers[2].get(tx, ty);
             if (under == 0) {
-                this.y += 1;
+                this.move(0, 1);
             }
         };
+        SpriteGroup.prototype.move = function(x, y) {
+            this.x += x;
+            this.y += y;
+            if (x != 0 || y != 0) {
+                this.draw();
+            }
+        }
 
         function init() {
             engine = new Engine();
@@ -119,9 +135,10 @@
                 return false;
             }
 
+            this.last_frame;
             this.canvas = document.getElementById('canvas');
             this.ctx = this.canvas.getContext('2d');
-            this.tilesets = []
+            this.tilesets = [];
 
             TILEWIDTH = this.canvas.getAttribute('width') / 8;
 
@@ -146,33 +163,32 @@
             layers[3][15] = 64 + 58;
 
             for (var i=0; i<16; i++) {
-                layers[2][ 16 * 12 + i ] = 28;
-                layers[2][ 16 * 13 + i ] = 27;
-                layers[2][ 16 * 14 + i ] = 27;
-                layers[2][ 16 * 15 + i ] = 27;
+                layers[2].set(i, 12, 28);
+                layers[2].set(i, 13, 27);
+                layers[2].set(i, 14, 27);
+                layers[2].set(i, 15, 27);
             }
 
             layers[0].setAll(T_LTBLUE);
 
-            this.loadTilesets(ready, "tileset.png", "alphanum.png");
+            this.loadTilesets("tileset.png", "alphanum.png");
         }
         Engine.prototype.loadTilesets = function() {
             var tileset
-            ,   cb = arguments[0]
-            ,   src = Array.prototype.slice.call(arguments, 1, arguments.length)
-            ,   to_load = src.length
+            ,   to_load = arguments.length
+            ,   engine = this
             ;
 
-            for (var i=0; i<src.length; i++) {
+            for (var i=0; i<arguments.length; i++) {
                 tileset = new Image();
                 this.tilesets.push(tileset)
                 tileset.onload = function() {
                     to_load -= 1; 
                     if (to_load === 0) {
-                        cb()
+                        engine.start()
                     }
                 };
-                tileset.src = src[i] + "?ts=" + (new Date().toISOString());
+                tileset.src = arguments[i] + "?ts=" + (new Date().toISOString());
             }
 
         }
@@ -183,7 +199,7 @@
             ;
             this.ctx.drawImage(tileset, sx*8, sy*8, 8, 8, x, y, 8, 8);
         }
-        Engine.prototype.tick = function() {
+        Engine.prototype.start = function start() {
             layers[0].draw();
             layers[1].draw();
 
@@ -196,10 +212,26 @@
             layers[2].draw();
             layers[3].draw();
 
+            requestAnimFrame(function(){
+                engine.tick()
+            });
+        }
+        Engine.prototype.tick = function() {
+            var t = new Date();
+            if (typeof this.last_frame != "undefined") {
+                console.debug(parseInt(1000 / (t.getTime() - this.last_frame.getTime())) + " fps");
+            }
+            this.last_frame = t;
+
+            var sl = sprites.length, si;
+            for (si=0; si<sl; si++) {
+                sprites[si].tick();
+            }
+
             if (this.keystate[K_RIGHT]) {
-                sprites[0].x += 1;
+                sprites[0].move(1, 0);
             } else if (this.keystate[K_LEFT]) {
-                sprites[0].x -= 1;
+                sprites[0].move(-1, 0);
             }
 
             requestAnimFrame(function() {
@@ -207,11 +239,6 @@
             });
         }
 
-        function ready() {
-            requestAnimFrame(function(){
-                engine.tick()
-            });
-        }
         /**
          * Provides requestAnimationFrame in a cross browser way.
          */
