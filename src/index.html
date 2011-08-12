@@ -48,7 +48,7 @@
         Layer.prototype.draw = function() {
             var x, y, i, l = this.width * this.height;
             for (i=0; i<l; i++) {
-                x = (i % TILEWIDTH) * 8 + this.offx;
+                x = (i % this.width) * 8 + this.offx;
                 y = parseInt(i / TILEWIDTH) * 8 + this.offy;
                 engine.blit(this[i], x, y);
             }
@@ -198,7 +198,9 @@
             ,   sy = parseInt((i % 64) / 8)
             ,   tileset = this.tilesets[parseInt(i / 64)]
             ;
-            this.ctx.drawImage(tileset, sx*8, sy*8, 8, 8, x, y, 8, 8);
+            if (x >= 0 && x < 128 && y >= 0 && y < 128) {
+                this.ctx.drawImage(tileset, sx*8, sy*8, 8, 8, x, y, 8, 8);
+            }
         }
         Engine.prototype.start = function start() {
             layers[0].draw();
