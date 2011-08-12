@@ -192,13 +192,30 @@
             if (under == 0) {
                 sprites[0].y += 1;
             }
+
+            requestAnimFrame(function() {
+                engine.tick();
+            });
         }
 
         function ready() {
-            window.setInterval(function(){
+            requestAnimFrame(function(){
                 engine.tick()
-            }, 1000/30);
+            });
         }
+        /**
+         * Provides requestAnimationFrame in a cross browser way.
+         */
+        window.requestAnimFrame = (function() {
+          return window.requestAnimationFrame ||
+                 window.webkitRequestAnimationFrame ||
+                 window.mozRequestAnimationFrame ||
+                 window.oRequestAnimationFrame ||
+                 window.msRequestAnimationFrame ||
+                 function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+                   window.setTimeout(callback, 1000/60);
+                 };
+        })();
         </script>
     </body>
 </html>
