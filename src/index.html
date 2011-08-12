@@ -106,8 +106,9 @@
         };
         SpriteGroup.prototype.tick = function() {
             var ty = parseInt((this.y + 8) / 8);
-            var tx = parseInt(this.x / 8);
+            var tx = parseInt((this.x - layers[2].offx) / 8);
             var under = layers[2].get(tx, ty);
+            console.debug(tx, ty, under);
             if (under == 0) {
                 this.move(0, 1);
             }
@@ -219,7 +220,7 @@
         Engine.prototype.tick = function() {
             var t = new Date();
             if (typeof this.last_frame != "undefined") {
-                console.debug(parseInt(1000 / (t.getTime() - this.last_frame.getTime())) + " fps");
+                // console.debug(parseInt(1000 / (t.getTime() - this.last_frame.getTime())) + " fps");
             }
             this.last_frame = t;
 
@@ -229,9 +230,13 @@
             }
 
             if (this.keystate[K_RIGHT]) {
-                sprites[0].move(1, 0);
+                //sprites[0].move(1, 0);
+                layers[2].offx -= 1;
+                layers[2].draw();
             } else if (this.keystate[K_LEFT]) {
-                sprites[0].move(-1, 0);
+                //sprites[0].move(-1, 0);
+                layers[2].offx += 1;
+                layers[2].draw();
             }
 
             requestAnimFrame(function() {
