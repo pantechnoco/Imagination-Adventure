@@ -22,6 +22,7 @@
         ,   TILEWIDTH
         ,   JUMPHEIGHT = 24
 
+        ,   health = 100
         ,   jumping = JUMPHEIGHT
         ,   falling = false
         
@@ -39,6 +40,8 @@
         ,   T_GRAY = 31
         ,   T_LTBLUE = 12
         ,   T_BOX = 49
+        ,   T_SPIKE1 = 50
+        ,   T_SPIKE2 = 51
         ;
 
         function Viewport() {
@@ -164,6 +167,9 @@
             if (under_1 === 0 && under_2 === 0) {
                 this.move(0, 1);
                 falling = true;
+            } else if (under_1 === T_SPIKE1 || under_2 === T_SPIKE1 || under_1 === T_SPIKE2 || under_2 === T_SPIKE2) {
+                this.move(0, -16);
+                health -= 1;
             } else {
                 falling = false;
                 jumping = JUMPHEIGHT
@@ -241,6 +247,16 @@
                 layers[2].set(i, 14, 27);
                 layers[2].set(i, 15, 27);
             }
+
+            layers[2].set(15, 11, 0);
+            layers[2].set(16, 11, 0);
+            layers[2].set(17, 11, 0);
+            layers[2].set(15, 12, 0);
+            layers[2].set(16, 12, 0);
+            layers[2].set(17, 12, 0);
+            layers[2].set(15, 13, T_SPIKE1);
+            layers[2].set(16, 13, T_SPIKE2);
+            layers[2].set(17, 13, T_SPIKE1);
 
             layers[0].setAll(T_LTBLUE);
 
