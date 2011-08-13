@@ -152,7 +152,7 @@
             ,   under_2 = layers[2].get(tx+1, ty)
             ;
 
-            /*
+            /* DEBUG LANDING SPACES
             if (under_1 !== 0) {
                 layers[2].set(tx, ty, 5);
             }
@@ -170,11 +170,16 @@
             }
         };
         SpriteGroup.prototype.move = function(x, y) {
-            this.x += x;
-            this.y += y;
-            if (x != 0 || y != 0) {
-                this.draw();
+            var ty = parseInt(this.y / 8)
+            ,   tx = parseInt(this.x / 8)
+            ,   left = layers[2].get(tx, ty)
+            ,   right = layers[2].get(tx+1, ty)
+            ;
+
+            if ((x > 0 && right === 0) || (x < 0 && left === 0)) {
+                this.x += x;
             }
+            this.y += y;
         }
 
         function init() {
