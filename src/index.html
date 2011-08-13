@@ -146,11 +146,22 @@
             layers[3].draw();
         };
         SpriteGroup.prototype.tick = function() {
-            var ty = parseInt((this.y + 8) / 8);
-            var tx = parseInt((this.x - viewport.x) / 8);
-            var under = layers[2].get(tx, ty);
-            // console.debug(tx, ty, under);
-            if (under == 0) {
+            var ty = parseInt((this.y + 8) / 8)
+            ,   tx = parseInt(this.x / 8)
+            ,   under_1 = layers[2].get(tx, ty)
+            ,   under_2 = layers[2].get(tx+1, ty)
+            ;
+
+            /*
+            if (under_1 !== 0) {
+                layers[2].set(tx, ty, 5);
+            }
+            if (under_2 !== 0) {
+                layers[2].set(tx+1, ty, 5);
+            }
+            /**/
+
+            if (under_1 === 0 && under_2 === 0) {
                 this.move(0, 1);
                 falling = true;
             } else {
