@@ -127,6 +127,7 @@
         function SpriteGroup(x, y, sprites, inworld) {
             this.x = x;
             this.y = y;
+            this.dy = 0;
             this.sprites = sprites;
             this.inworld = !!inworld;
         }
@@ -169,12 +170,17 @@
             /**/
 
             if (under_1 === 0 && under_2 === 0) {
-                this.move(0, 1);
+                if (this.dy === 0)
+                    this.dy = 0.75;
+                else
+                    this.dy += 0.025 
+                this.move(0, this.dy);
                 falling = true;
             } else if (under_1 === T_SPIKE1 || under_2 === T_SPIKE1 || under_1 === T_SPIKE2 || under_2 === T_SPIKE2) {
                 this.move(0, -16);
                 this.hurt(10);
             } else {
+                this.dy = 0;
                 falling = false;
                 jumping = JUMPHEIGHT
             }
@@ -327,7 +333,7 @@
                 sprites[0].move(-1, 0);
             }
             if (this.keystate[K_SPACE] && jumping > 0 && !(falling && jumping==JUMPHEIGHT)) {
-                sprites[0].move(0, -2);
+                sprites[0].move(0, parseInt(-4 * Math.sin(jumping/JUMPHEIGHT)));
                 jumping -= 1;
             }
 
