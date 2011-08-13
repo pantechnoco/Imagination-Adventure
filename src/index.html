@@ -18,13 +18,19 @@
         ,   layers
         ,   sprites
         ,   tileset
-        
+
         ,   TILEWIDTH
+        ,   JUMPHEIGHT = 24
+
+        ,   jumping = JUMPHEIGHT
+        ,   falling = false
+        
 
         ,   K_LEFT = 37
         ,   K_UP = 38
         ,   K_RIGHT = 39
         ,   K_DOWN = 40
+        ,   K_SPACE = 32
 
         ,   T_TRANSPARENT = 0
         ,   T_WHITE = 63
@@ -145,6 +151,10 @@
             // console.debug(tx, ty, under);
             if (under == 0) {
                 this.move(0, 1);
+                falling = true;
+            } else {
+                falling = false;
+                jumping = JUMPHEIGHT
             }
         };
         SpriteGroup.prototype.move = function(x, y) {
@@ -269,9 +279,13 @@
             }
 
             if (this.keystate[K_RIGHT]) {
-                sprites[0].x += 1;
+                sprites[0].move(1, 0);
             } else if (this.keystate[K_LEFT]) {
-                sprites[0].x -= 1;
+                sprites[0].move(-1, 0);
+            }
+            if (this.keystate[K_SPACE] && jumping > 0 && !(falling && jumping==JUMPHEIGHT)) {
+                sprites[0].move(0, -2);
+                jumping -= 1;
             }
 
             if (sprites[0].x + viewport.x < TILEWIDTH*8 / 3) {
