@@ -25,7 +25,7 @@
         ,   health = 100
         ,   jumping = JUMPHEIGHT
         ,   falling = false
-        
+        ,   landed = false
 
         ,   K_LEFT = 37
         ,   K_UP = 38
@@ -181,6 +181,8 @@
                 this.hurt(10);
             } else {
                 this.dy = 0;
+                if (falling)
+                    landed = true;
                 falling = false;
                 jumping = JUMPHEIGHT
             }
@@ -333,8 +335,13 @@
                 sprites[0].move(-1, 0);
             }
             if (this.keystate[K_SPACE] && jumping > 0 && !(falling && jumping==JUMPHEIGHT)) {
-                sprites[0].move(0, parseInt(-4 * Math.sin(jumping/JUMPHEIGHT)));
-                jumping -= 1;
+                if (!landed) {
+                    sprites[0].move(0, parseInt(-4 * Math.sin(jumping/JUMPHEIGHT)));
+                    jumping -= 1;
+                }
+            }
+            if (!this.keystate[K_SPACE]) {
+                landed = false;
             }
 
             if (sprites[0].x + viewport.x < TILEWIDTH*8 / 3) {
