@@ -269,14 +269,19 @@
             }
 
             if (this.keystate[K_RIGHT]) {
-                viewport.x -= 1;
-                layers[2].draw();
-                sprites[0].draw();
+                sprites[0].x += 1;
             } else if (this.keystate[K_LEFT]) {
-                viewport.x += 1;
-                layers[2].draw();
-                sprites[0].draw();
+                sprites[0].x -= 1;
             }
+
+            if (sprites[0].x + viewport.x < TILEWIDTH*8 / 3) {
+                viewport.x += 1;
+            } else if (sprites[0].x + viewport.x > TILEWIDTH*8 / 1.5) {
+                viewport.x -= 1;
+            }
+
+            layers[2].draw();
+            sprites[0].draw();
 
             requestAnimFrame(function() {
                 engine.tick();
