@@ -33,24 +33,28 @@
         ,   T_LTBLUE = 12
         ;
 
-        function Layer(h, w) {
+        function Layer(h, w, debug) {
             this.offx = 0;
             this.offy = 0;
             this.height = h;
             this.width = w;
             for (var h_i=0; h_i<h; h_i++) {
-                for (var w_i=0; w_i<h; w_i++) {
+                for (var w_i=0; w_i<w; w_i++) {
                     this.push(T_TRANSPARENT);
                 }
+            }
+            if (debug) {
+                this._debug_map();
             }
         };
         Layer.prototype = (new Array());
         Layer.prototype.draw = function() {
-            var x, y, i, l = this.width * this.height;
-            for (i=0; i<l; i++) {
-                x = (i % this.width) * 8 + this.offx;
-                y = parseInt(i / TILEWIDTH) * 8 + this.offy;
-                engine.blit(this[i], x, y);
+            var x, y;
+            for (x=0; x<this.width; x++) {
+                for (y=0; y<this.height; y++) {
+                    //console.debug(this.get(x, y), x*8 + this.offx, y*8 + this.offy);
+                    engine.blit(this.get(x, y), x*8 + this.offx, y*8 + this.offy);
+                }
             }
         };
         Layer.prototype.setAll = function(t) {
@@ -69,6 +73,24 @@
             var i = (y * this.width) + x
             ;
             this[i] = t;
+        };
+        Layer.prototype._debug_map = function() {
+            var x, y, l, t;
+            for (y=0; y<this.height; y++) {
+                l = []
+                for (x=0; x<this.width; x++) {
+                    try {
+                        t = this.get(x, y).toString(16);
+                    } catch (e) {
+                        t = "--";
+                    }
+                    if (t.length == 1) {
+                        t = ["0" + t].join("");
+                    }
+                    l.push(t);
+                }
+                console.debug(l);
+            }
         };
 
         function Sprite(x, y, t) {
@@ -108,7 +130,7 @@
             var ty = parseInt((this.y + 8) / 8);
             var tx = parseInt((this.x - layers[2].offx) / 8);
             var under = layers[2].get(tx, ty);
-            console.debug(tx, ty, under);
+            // console.debug(tx, ty, under);
             if (under == 0) {
                 this.move(0, 1);
             }
@@ -146,7 +168,7 @@
             layers = [];
             layers.push(new Layer(TILEWIDTH, TILEWIDTH));
             layers.push(new Layer(TILEWIDTH, TILEWIDTH));
-            layers.push(new Layer(TILEWIDTH, TILEWIDTH));
+            layers.push(new Layer(TILEWIDTH, TILEWIDTH * 2));
             layers.push(new Layer(TILEWIDTH, TILEWIDTH));
 
             sprites = [];
@@ -163,7 +185,7 @@
             layers[3][14] = 64 + 56;
             layers[3][15] = 64 + 58;
 
-            for (var i=0; i<16; i++) {
+            for (var i=0; i<layers[2].width; i++) {
                 layers[2].set(i, 12, 28);
                 layers[2].set(i, 13, 27);
                 layers[2].set(i, 14, 27);
