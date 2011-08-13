@@ -13,6 +13,7 @@
         <script type="text/javascript">
         var canvas
         ,   engine
+        ,   viewport
         ,   ctx
         ,   layers
         ,   sprites
@@ -33,27 +34,35 @@
         ,   T_LTBLUE = 12
         ;
 
-        function Layer(h, w, debug) {
-            this.offx = 0;
-            this.offy = 0;
+        function Viewport() {
+            this.x = 0;
+            this.y = 0;
+            this.width = TILEWIDTH;
+            this.height = TILEWIDTH;
+        };
+        Viewport.prototype.draw = function() {
+            
+        };
+
+        function Layer(h, w, inworld) {
             this.height = h;
             this.width = w;
+            this.inworld = !!inworld;
             for (var h_i=0; h_i<h; h_i++) {
                 for (var w_i=0; w_i<w; w_i++) {
                     this.push(T_TRANSPARENT);
                 }
             }
-            if (debug) {
-                this._debug_map();
-            }
         };
         Layer.prototype = (new Array());
         Layer.prototype.draw = function() {
-            var x, y;
+            var x, y
+            ,   offx = this.inworld ? viewport.x : 0
+            ,   offy = this.inworld ? viewport.y : 0
+            ;
             for (x=0; x<this.width; x++) {
                 for (y=0; y<this.height; y++) {
-                    //console.debug(this.get(x, y), x*8 + this.offx, y*8 + this.offy);
-                    engine.blit(this.get(x, y), x*8 + this.offx, y*8 + this.offy);
+                    engine.blit(this.get(x, y), x*8 + offx, y*8 + offy);
                 }
             }
         };
@@ -105,10 +114,11 @@
 
         };
 
-        function SpriteGroup(x, y, sprites) {
+        function SpriteGroup(x, y, sprites, inworld) {
             this.x = x;
             this.y = y;
             this.sprites = sprites;
+            this.inworld = !!inworld;
         }
         SpriteGroup.prototype.draw = function() {
             var sl = this.sprites.length
@@ -116,19 +126,21 @@
             ,   s
             ,   x = this.x
             ,   y = this.y
+            ,   offx = this.inworld ? viewport.x : 0
+            ,   offy = this.inworld ? viewport.y : 0
             ;
             layers[0].draw();
             layers[1].draw();
             for (i=0; i<sl; i++) {
                 s = this.sprites[i];
-                engine.blit(s.t, x+s.x, y+s.y);
+                engine.blit(s.t, x+s.x+offx, y+s.y+offy);
             }
             layers[2].draw();
             layers[3].draw();
         };
         SpriteGroup.prototype.tick = function() {
             var ty = parseInt((this.y + 8) / 8);
-            var tx = parseInt((this.x - layers[2].offx) / 8);
+            var tx = parseInt((this.x - viewport.x) / 8);
             var under = layers[2].get(tx, ty);
             // console.debug(tx, ty, under);
             if (under == 0) {
@@ -145,6 +157,7 @@
 
         function init() {
             engine = new Engine();
+
         }
 
         function Engine() {
@@ -165,17 +178,19 @@
 
             TILEWIDTH = this.canvas.getAttribute('width') / 8;
 
+            viewport = new Viewport();
+
             layers = [];
             layers.push(new Layer(TILEWIDTH, TILEWIDTH));
-            layers.push(new Layer(TILEWIDTH, TILEWIDTH));
-            layers.push(new Layer(TILEWIDTH, TILEWIDTH * 2));
+            layers.push(new Layer(TILEWIDTH, TILEWIDTH, true));
+            layers.push(new Layer(TILEWIDTH, TILEWIDTH * 2, true));
             layers.push(new Layer(TILEWIDTH, TILEWIDTH));
 
             sprites = [];
             sprites.push(new SpriteGroup(50, 50, [
                 new Sprite(0,  0, 3)
             ,   new Sprite(0, -8, 3+8)
-            ]));
+            ], true));
 
             layers[3][0] = 65;
             layers[3][1] = 64;
@@ -254,13 +269,13 @@
             }
 
             if (this.keystate[K_RIGHT]) {
-                //sprites[0].move(1, 0);
-                layers[2].offx -= 1;
+                viewport.x -= 1;
                 layers[2].draw();
+                sprites[0].draw();
             } else if (this.keystate[K_LEFT]) {
-                //sprites[0].move(-1, 0);
-                layers[2].offx += 1;
+                viewport.x += 1;
                 layers[2].draw();
+                sprites[0].draw();
             }
 
             requestAnimFrame(function() {
