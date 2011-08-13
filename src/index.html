@@ -18,6 +18,7 @@
         ,   layers
         ,   sprites
         ,   tileset
+        ,   now
 
         ,   TILEWIDTH
         ,   JUMPHEIGHT = 24
@@ -42,6 +43,10 @@
         ,   T_BOX = 49
         ,   T_SPIKE1 = 50
         ,   T_SPIKE2 = 51
+        ,   T_PLHEAD = 10
+        ,   T_PLFEET1 = 17
+        ,   T_PLFEET2 = 18
+        ,   T_PLFEET3 = 19
         ;
 
         function Viewport() {
@@ -196,6 +201,9 @@
 
             if ((x > 0 && right === 0) || (x < 0 && left === 0)) {
                 this.x += parseInt(x);
+                this.sprites[1].t = [T_PLFEET1, T_PLFEET2, T_PLFEET3][parseInt((now % 500) / 170)];
+            } else {
+                this.sprites[1].t = T_PLFEET2;
             }
             this.y += parseInt(y);
         }
@@ -233,8 +241,8 @@
 
             sprites = [];
             sprites.push(new SpriteGroup(50, 50, [
-                new Sprite(0,  0, 3)
-            ,   new Sprite(0, -8, 3+8)
+                new Sprite(0, -8, T_PLHEAD)
+            ,   new Sprite(0,  0, T_PLFEET2)
             ], true));
 
             layers[3][0] = 65;
@@ -318,11 +326,11 @@
             });
         }
         Engine.prototype.tick = function() {
-            var t = new Date();
+            now  = new Date();
             if (typeof this.last_frame != "undefined") {
-                // console.debug(parseInt(1000 / (t.getTime() - this.last_frame.getTime())) + " fps");
+                // console.debug(parseInt(1000 / (now.getTime() - this.last_frame.getTime())) + " fps");
             }
-            this.last_frame = t;
+            this.last_frame = now;
 
             var sl = sprites.length, si;
             for (si=0; si<sl; si++) {
