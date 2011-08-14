@@ -22,6 +22,7 @@
 
         ,   TILEWIDTH
         ,   JUMPHEIGHT = 24
+        ,   WALK_SPEED = 250
 
         ,   health = 100
         ,   jumping = JUMPHEIGHT
@@ -197,7 +198,7 @@
 
             if ((x > 0 && right === 0) || (x < 0 && left === 0)) {
                 this.x += parseInt(x);
-                this.sprites[1].t = [T_PLFEET1, T_PLFEET2, T_PLFEET3][parseInt((now % 500) / 170)];
+                this.sprites[1].t = [T_PLFEET1, T_PLFEET2, T_PLFEET3][parseInt((now % WALK_SPEED) / (WALK_SPEED/3))];
             } else {
                 this.sprites[1].t = T_PLFEET2;
             }
