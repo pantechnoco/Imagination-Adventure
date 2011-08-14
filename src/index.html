@@ -190,13 +190,14 @@
             }
         };
         SpriteGroup.prototype.move = function(x, y) {
-            var ty = parseInt(this.y / 8)
-            ,   tx = parseInt(this.x / 8)
-            ,   left = layers[2].get(tx, ty)
-            ,   right = layers[2].get(tx+1, ty)
+            var ty = this.y / 8
+            ,   tx = (this.x % 8)===0 ? (this.x/8)+(x<0?-1:1) : (this.x/8)
+            ,   l = layers[2]
+            ,   left = l.get(Math.floor(tx), Math.ceil(ty))===0
+            ,   right = l.get(Math.ceil(tx), Math.ceil(ty))===0
             ;
 
-            if ((x > 0 && right === 0) || (x < 0 && left === 0)) {
+            if ((x > 0 && right) || (x < 0 && left)) {
                 this.x += parseInt(x);
                 this.sprites[1].t = [T_PLFEET1, T_PLFEET2, T_PLFEET3][parseInt((now % WALK_SPEED) / (WALK_SPEED/3))];
             } else {
