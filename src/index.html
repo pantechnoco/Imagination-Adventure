@@ -50,6 +50,15 @@
         ,   T_PLFEET3 = 19
         ;
 
+        function rect_in_rect(a, b) {
+            return (!(
+                a[0] > (b[0]+b[2]) ||
+                a[0]+a[2] < b[0] ||
+                a[1] > (b[1]+b[3]) ||
+                a[1]+a[3] < b[1]
+            ));
+        }
+
         function Viewport() {
             this.x = 0;
             this.y = 0;
@@ -73,12 +82,15 @@
         Layer.prototype = (new Array());
         Layer.prototype.draw = function() {
             var x, y
+            ,   bx, by, bw, bh
             ,   offx = this.inworld ? viewport.x : 0
             ,   offy = this.inworld ? viewport.y : 0
             ;
             for (x=0; x<this.width; x++) {
+                bx = x * 8 + offx;
                 for (y=0; y<this.height; y++) {
-                    engine.blit(this.get(x, y), x*8 + offx, y*8 + offy);
+                    by = y * 8 + offy;
+                    engine.blit(this.get(x, y), bx, by);
                 }
             }
         };
