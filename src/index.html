@@ -17,6 +17,7 @@
         ,   ctx
         ,   layers
         ,   sprites
+        ,   player
         ,   tileset
         ,   now
 
@@ -163,35 +164,6 @@
                 engine.blit(s.t, x+s.x+offx, y+s.y+offy);
             }
         };
-        SpriteGroup.prototype.hurt = function(h) {
-            health -= h;
-            engine.update_health();
-        };
-        SpriteGroup.prototype.tick = function() {
-            var ty = parseInt((this.y + 8) / 8)
-            ,   tx = parseInt(this.x / 8)
-            ,   under_1 = layers[2].get(tx, ty)
-            ,   under_2 = layers[2].get(tx+1, ty)
-            ;
-
-            if (under_1 === 0 && under_2 === 0) {
-                if (this.dy === 0)
-                    this.dy = 0.75;
-                else
-                    this.dy += 0.025 
-                this.move(0, this.dy);
-                falling = true;
-            } else if (under_1 === T_SPIKE1 || under_2 === T_SPIKE1 || under_1 === T_SPIKE2 || under_2 === T_SPIKE2) {
-                this.move(0, -16);
-                this.hurt(10);
-            } else {
-                this.dy = 0;
-                if (falling)
-                    landed = true;
-                falling = false;
-                jumping = JUMPHEIGHT
-            }
-        };
         SpriteGroup.prototype.move = function(x, y) {
             var ty = this.y / 8
             ,   tx = (this.x % 8)===0 ? (this.x/8)+(x<0?-1:1) : (this.x/8)
@@ -208,6 +180,40 @@
             }
             this.y += parseInt(y);
         }
+
+        function Player(sprite) {
+            this.sprite = sprite;
+        }
+        Player.prototype.hurt = function(h) {
+            health -= h;
+            engine.update_health();
+        };
+        Player.prototype.tick = function() {
+            var sprite = this.sprite
+            ,   ty = parseInt((sprite.y + 8) / 8)
+            ,   tx = parseInt(sprite.x / 8)
+            ,   under_1 = layers[2].get(tx, ty)
+            ,   under_2 = layers[2].get(tx+1, ty)
+            ;
+
+            if (under_1 === 0 && under_2 === 0) {
+                if (sprite.dy === 0)
+                    sprite.dy = 0.75;
+                else
+                    sprite.dy += 0.025 
+                sprite.move(0, sprite.dy);
+                falling = true;
+            } else if (under_1 === T_SPIKE1 || under_2 === T_SPIKE1 || under_1 === T_SPIKE2 || under_2 === T_SPIKE2) {
+                sprite.move(0, -16);
+                this.hurt(10);
+            } else {
+                sprite.dy = 0;
+                if (falling)
+                    landed = true;
+                falling = false;
+                jumping = JUMPHEIGHT
+            }
+        };
 
         function init() {
             engine = new Engine();
@@ -245,6 +251,7 @@
                 new Sprite(0, -8, T_PLHEAD)
             ,   new Sprite(0,  0, T_PLFEET2)
             ], true));
+            player = new Player(sprites[0]);
 
             layers[3][0] = 65;
             layers[3][1] = 64;
@@ -316,7 +323,6 @@
             var sl = sprites.length, si;
             for (si=0; si<sl; si++) {
                 sprites[si].draw();
-                sprites[si].tick();
             }
 
             layers[2].draw();
@@ -334,10 +340,7 @@
             }
             this.last_frame = now;
 
-            var sl = sprites.length, si;
-            for (si=0; si<sl; si++) {
-                sprites[si].tick();
-            }
+            player.tick();
 
             if (this.keystate[K_RIGHT]) {
                 sprites[0].move(1, 0);
