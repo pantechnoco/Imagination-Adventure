@@ -333,7 +333,6 @@
             });
         }
         Engine.prototype.tick = function() {
-            var redraw = false;
             now  = new Date();
             if (typeof this.last_frame != "undefined") {
                 // console.debug(parseInt(1000 / (now.getTime() - this.last_frame.getTime())) + " fps");
@@ -344,20 +343,15 @@
 
             if (this.keystate[K_RIGHT]) {
                 sprites[0].move(1, 0);
-                redraw = true;
             } else if (this.keystate[K_LEFT]) {
                 sprites[0].move(-1, 0);
-                redraw = true;
             }
             if (this.keystate[K_SPACE] && jumping > 0 && !(falling && jumping==JUMPHEIGHT)) {
                 if (!landed) {
                     sprites[0].move(0, parseInt(-3 * Math.sin(jumping/JUMPHEIGHT)));
                     jumping -= 1;
-                    redraw = true;
                 }
             }
-            if (falling)
-                redraw = true;
             if (!this.keystate[K_SPACE]) {
                 landed = false;
             }
@@ -368,13 +362,11 @@
                 viewport.x -= 1;
             }
 
-            if (redraw) {
-                layers[0].draw();
-                layers[1].draw();
-                sprites[0].draw();
-                layers[2].draw();
-                layers[3].draw();
-            }
+            layers[0].draw();
+            layers[1].draw();
+            sprites[0].draw();
+            layers[2].draw();
+            layers[3].draw();
 
             requestAnimFrame(function() {
                 engine.tick();
