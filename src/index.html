@@ -213,6 +213,21 @@
                 falling = false;
                 jumping = JUMPHEIGHT
             }
+
+            if (engine.keystate[K_RIGHT]) {
+                sprite.move(1, 0);
+            } else if (engine.keystate[K_LEFT]) {
+                sprite.move(-1, 0);
+            }
+            if (engine.keystate[K_SPACE] && jumping > 0 && !(falling && jumping==JUMPHEIGHT)) {
+                if (!landed) {
+                    sprite.move(0, parseInt(-3 * Math.sin(jumping/JUMPHEIGHT)));
+                    jumping -= 1;
+                }
+            }
+            if (!engine.keystate[K_SPACE]) {
+                landed = false;
+            }
         };
 
         function init() {
@@ -340,21 +355,6 @@
             this.last_frame = now;
 
             player.tick();
-
-            if (this.keystate[K_RIGHT]) {
-                sprites[0].move(1, 0);
-            } else if (this.keystate[K_LEFT]) {
-                sprites[0].move(-1, 0);
-            }
-            if (this.keystate[K_SPACE] && jumping > 0 && !(falling && jumping==JUMPHEIGHT)) {
-                if (!landed) {
-                    sprites[0].move(0, parseInt(-3 * Math.sin(jumping/JUMPHEIGHT)));
-                    jumping -= 1;
-                }
-            }
-            if (!this.keystate[K_SPACE]) {
-                landed = false;
-            }
 
             if (sprites[0].x + viewport.x < TILEWIDTH*8 / 3) {
                 viewport.x += 1;
