@@ -174,15 +174,6 @@
             ,   under_2 = layers[2].get(tx+1, ty)
             ;
 
-            /* DEBUG LANDING SPACES
-            if (under_1 !== 0) {
-                layers[2].set(tx, ty, 5);
-            }
-            if (under_2 !== 0) {
-                layers[2].set(tx+1, ty, 5);
-            }
-            /**/
-
             if (under_1 === 0 && under_2 === 0) {
                 if (this.dy === 0)
                     this.dy = 0.75;
