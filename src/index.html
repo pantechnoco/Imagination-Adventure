@@ -146,6 +146,8 @@
         function SpriteGroup(x, y, sprites, inworld) {
             this.x = x;
             this.y = y;
+            this.xflip = false;
+            this.yflip = false;
             this.dy = 0;
             this.sprites = sprites;
             this.inworld = !!inworld;
@@ -161,7 +163,7 @@
             ;
             for (i=0; i<sl; i++) {
                 s = this.sprites[i];
-                engine.blit(s.t, x+s.x+offx, y+s.y+offy);
+                engine.blit(s.t, x+s.x+offx, y+s.y+offy, this.xflip, this.yflip);
             }
         };
         SpriteGroup.prototype.move = function(x, y) {
@@ -216,8 +218,10 @@
 
             if (engine.keystate[K_RIGHT]) {
                 sprite.move(1, 0);
+                sprite.xflip = true;
             } else if (engine.keystate[K_LEFT]) {
                 sprite.move(-1, 0);
+                sprite.xflip = false;
             }
             if (engine.keystate[K_SPACE] && jumping > 0 && !(falling && jumping==JUMPHEIGHT)) {
                 if (!landed) {
@@ -320,13 +324,16 @@
             }
 
         }
-        Engine.prototype.blit = function blit(i, x, y) {
+        Engine.prototype.blit = function blit(i, x, y, xflip, yflip) {
             var sx = (i % 64) % 8
             ,   sy = parseInt((i % 64) / 8)
             ,   tileset = this.tilesets[parseInt(i / 64)]
             ;
             if (x >= 0 && x < 128 && y >= 0 && y < 128) {
-                this.ctx.drawImage(tileset, sx*8, sy*8, 8, 8, x, y, 8, 8);
+                this.ctx.setTransform(1,0,0,1,0,0);
+                this.ctx.translate(!!xflip?128:0, 0)
+                this.ctx.scale(!!xflip?-1:1, 1);
+                this.ctx.drawImage(tileset, sx*8, sy*8, 8, 8, !!xflip?120-x:x, y, 8, 8);
             }
         }
         Engine.prototype.start = function start() {
