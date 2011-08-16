@@ -176,9 +176,6 @@
 
             if ((x > 0 && right) || (x < 0 && left)) {
                 this.x += parseInt(x);
-                this.sprites[1].t = [T_PLFEET1, T_PLFEET2, T_PLFEET3][parseInt((now % WALK_SPEED) / (WALK_SPEED/3))];
-            } else {
-                this.sprites[1].t = T_PLFEET2;
             }
             this.y += parseInt(y);
         }
@@ -223,8 +220,15 @@
                 sprite.move(-1, 0);
                 sprite.xflip = false;
             }
+            if (engine.keystate[K_RIGHT] || engine.keystate[K_LEFT]) {
+                sprite.sprites[1].t = [T_PLFEET1, T_PLFEET2, T_PLFEET3][parseInt((now % WALK_SPEED) / (WALK_SPEED/3))];
+            } else {
+                sprite.sprites[1].t = T_PLFEET2;
+            }
+
             if (engine.keystate[K_SPACE] && jumping > 0 && !(falling && jumping==JUMPHEIGHT)) {
                 if (!landed) {
+                    sprite.sprites[1].t = T_PLFEET1;
                     sprite.move(0, parseInt(-3 * Math.sin(jumping/JUMPHEIGHT)));
                     jumping -= 1;
                 }
