@@ -167,6 +167,18 @@ SpriteGroup.prototype.move = function(x, y) {
     this.y += parseInt(y);
 }
 
+var action_tiles = {};
+(function(){
+    function action_spike(player) {
+        player.sprite.dy = -1.5;
+        player.hurt(10);
+
+        return true;
+    }
+    action_tiles[T_SPIKE1] = action_spike;
+    action_tiles[T_SPIKE2] = action_spike;
+})();
+
 function Player(sprite) {
     this.sprite = sprite;
 }
@@ -180,12 +192,16 @@ Player.prototype.tick = function() {
     ,   tx = parseInt(sprite.x / 8)
     ,   under_1 = layers[2].get(tx, ty)
     ,   under_2 = layers[2].get(tx+1, ty)
+    ,   handled_1 = false
+    ,   handled_2 = false
     ;
 
     if (sprite.dy < 0){
         sprite.move(0, sprite.dy);
         sprite.dy += 0.033; 
     }
+
+    // falling?
     if (under_1 === 0 && (sprite.x%8===0 ? true:under_2 === 0)) {
         if (sprite.dy === 0) {
             sprite.dy = 0.75;
@@ -195,10 +211,22 @@ Player.prototype.tick = function() {
             sprite.move(0, sprite.dy);
         }
         falling = true;
-    } else if (under_1 === T_SPIKE1 || under_2 === T_SPIKE1 || under_1 === T_SPIKE2 || under_2 === T_SPIKE2) {
-        sprite.dy = -1.5;
-        this.hurt(10);
-    } else {
+        handled_1 = handled_2 = true;
+    }
+
+    // hit some action tile?
+    if (!(handled_1 && handled_2)) {
+        if (typeof action_tiles[under_1] === 'function') {
+            handled_1 = true;
+            handled_2 = action_tiles[under_1](this);
+        }
+        if (!handled_2 && action_tiles[under_2]) {
+            handled_2 = action_tiles[under_2](this);
+        }
+    }
+    
+    // otherwise, land on the ground
+    if (!handled_1 || !handled_2) {
         sprite.dy = 0;
         sprite.y = sprite.y - sprite.y%8;
         if (falling)
