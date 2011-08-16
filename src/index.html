@@ -196,7 +196,7 @@
             ,   under_2 = layers[2].get(tx+1, ty)
             ;
 
-            if (under_1 === 0 && under_2 === 0) {
+            if (under_1 === 0 && (sprite.x%8===0 ? true:under_2 === 0)) {
                 if (sprite.dy === 0)
                     sprite.dy = 0.75;
                 else
