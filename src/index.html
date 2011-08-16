@@ -195,6 +195,10 @@
             ,   under_2 = layers[2].get(tx+1, ty)
             ;
 
+            if (sprite.dy < 0){
+                sprite.move(0, sprite.dy);
+                sprite.dy += 0.033; 
+            }
             if (under_1 === 0 && (sprite.x%8===0 ? true:under_2 === 0)) {
                 if (sprite.dy === 0) {
                     sprite.dy = 0.75;
@@ -205,10 +209,11 @@
                 }
                 falling = true;
             } else if (under_1 === T_SPIKE1 || under_2 === T_SPIKE1 || under_1 === T_SPIKE2 || under_2 === T_SPIKE2) {
-                sprite.move(0, -16);
+                sprite.dy = -1.5;
                 this.hurt(10);
             } else {
                 sprite.dy = 0;
+                sprite.y = sprite.y - sprite.y%8;
                 if (falling)
                     landed = true;
                 falling = false;
