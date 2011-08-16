@@ -196,11 +196,13 @@
             ;
 
             if (under_1 === 0 && (sprite.x%8===0 ? true:under_2 === 0)) {
-                if (sprite.dy === 0)
+                if (sprite.dy === 0) {
                     sprite.dy = 0.75;
-                else
-                    sprite.dy += 0.025 
-                sprite.move(0, sprite.dy);
+                    sprite.move(0, 1);
+                } else {
+                    sprite.dy += 0.033; 
+                    sprite.move(0, sprite.dy);
+                }
                 falling = true;
             } else if (under_1 === T_SPIKE1 || under_2 === T_SPIKE1 || under_1 === T_SPIKE2 || under_2 === T_SPIKE2) {
                 sprite.move(0, -16);
@@ -228,11 +230,12 @@
 
             if (engine.keystate[K_SPACE] && jumping > 0 && !(falling && jumping==JUMPHEIGHT)) {
                 if (!landed) {
-                    sprite.sprites[1].t = T_PLFEET1;
                     sprite.move(0, parseInt(-3 * Math.sin(jumping/JUMPHEIGHT)));
                     jumping -= 1;
                 }
             }
+            if (falling)
+                sprite.sprites[1].t = T_PLFEET1;
             if (!engine.keystate[K_SPACE]) {
                 landed = false;
             }
