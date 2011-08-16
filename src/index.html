@@ -329,7 +329,7 @@
             ,   sy = parseInt((i % 64) / 8)
             ,   tileset = this.tilesets[parseInt(i / 64)]
             ;
-            if (x >= 0 && x < 128 && y >= 0 && y < 128) {
+            if (x > -8 && x < 128 && y >= 0 && y < 128) {
                 this.ctx.setTransform(1,0,0,1,0,0);
                 this.ctx.translate(!!xflip?128:0, 0)
                 this.ctx.scale(!!xflip?-1:1, 1);
