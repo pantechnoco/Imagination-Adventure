@@ -38,14 +38,31 @@ var canvas
 ,   T_PLFEET3 = 19
 ;
 
-function rect_in_rect(a, b) {
+
+function Rect(x, y, w, h) {
+    this.push(x);
+    this.push(y);
+    this.push(w);
+    this.push(h);
+};
+Rect.prototype = new Array();
+Rect.prototype.is_in = function(b) {
     return (!(
-        a[0] > (b[0]+b[2]) ||
-        a[0]+a[2] < b[0] ||
-        a[1] > (b[1]+b[3]) ||
-        a[1]+a[3] < b[1]
+        this[0] > (b[0]+b[2]) ||
+        this[0]+this[2] < b[0] ||
+        this[1] > (b[1]+b[3]) ||
+        this[1]+a[3] < b[1]
     ));
-}
+};
+Rect.prototype.is_in_list = function(rects) {
+    var i=0, l=rects.length, c=[];
+    for (; i<l; i++) {
+        if (this.is_in(rects[i])) {
+            c.push(rects[i]);
+        }
+    }
+    return c;
+};
 
 function Viewport() {
     this.x = 0;
